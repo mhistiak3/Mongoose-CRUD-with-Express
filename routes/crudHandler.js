@@ -21,6 +21,31 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: "There was a server side error" });
   }
 });
+
+// read active data
+router.get("/active", async (req, res) => {
+  try {
+   const crud = new CRUD()
+   const result = await crud.findActive();
+    res.status(200).json({ result });
+  } catch (error) {
+    res.status(500).json({ error: "There was a server side error" });
+  }
+});
+
+// read search data
+router.get("/:search", async (req, res) => {
+  const searchQuery = req.params.search;
+  try {
+    let result = await CRUD.findByQuery(searchQuery);
+    res.status(200).json({ result });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({ error: "There was a server side error" });
+  }
+});
+
 // read single data by id
 router.get("/:id", async (req, res) => {
   try {
@@ -31,6 +56,7 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ error: "There was a server side error" });
   }
 });
+
 // create data
 router.post("/", async (req, res) => {
   try {

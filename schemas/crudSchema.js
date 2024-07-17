@@ -16,4 +16,19 @@ const crudSchema = mongoose.Schema({
   },
 });
 
+// instance method
+crudSchema.methods = {
+  findActive: () => {
+    return mongoose.model("CRUD").find({ status: "active" });
+  },
+};
+
+// static method
+crudSchema.statics = {
+  findByQuery: function (searchQuery) {
+    let search = new RegExp(String.raw`${searchQuery}`, "g");
+
+    return this.find({ title: search });
+  },
+};
 module.exports = crudSchema;

@@ -17,6 +17,12 @@ const userSchema = mongoose.Schema({
     type: String,
     enum: ["active", "inactive"],
   },
+  cruds: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "CRUD",
+    },
+  ],
 });
 
 module.exports = userSchema;

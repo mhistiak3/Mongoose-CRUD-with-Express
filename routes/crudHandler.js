@@ -5,20 +5,21 @@ const mongoose = require("mongoose");
 const router = express.Router();
 // application module
 const crudSchema = require("../schemas/crudSchema");
+const userSchema = require("../schemas/userSchema");
 const checkLogin = require("../middlewares/checkLogin");
 
 const CRUD = new mongoose.model("CRUD", crudSchema);
+const User = new mongoose.model("User", userSchema);
 
 // read all data
-router.get("/",checkLogin, async (req, res) => {
-
-  
+router.get("/", checkLogin, async (req, res) => {
   try {
-    let result = await CRUD.find({})
+    let result = await CRUD.find({user:req.userId})
+      .populate("user","name username -_id")
       .select({
         __v: 0,
-      })
-      .limit(3);
+      });
+    // .limit(3);
     res.status(200).json({ result });
   } catch (error) {
     res.status(500).json({ error: "There was a server side error" });
@@ -28,8 +29,8 @@ router.get("/",checkLogin, async (req, res) => {
 // read active data
 router.get("/active", async (req, res) => {
   try {
-   const crud = new CRUD()
-   const result = await crud.findActive();
+    const crud = new CRUD();
+    const result = await crud.findActive();
     res.status(200).json({ result });
   } catch (error) {
     res.status(500).json({ error: "There was a server side error" });
@@ -61,10 +62,19 @@ router.get("/:id", async (req, res) => {
 });
 
 // create data
-router.post("/", async (req, res) => {
+router.post("/", checkLogin, async (req, res) => {
   try {
-    const newCRUD = new CRUD(req.body);
-    await newCRUD.save();
+    const newCRUD = new CRUD({ ...req.body, user: req.userId });
+     const data =  await newCRUD.save();
+     await User.updateOne(
+       { _id: req.userId },
+       {
+         $push: {
+           cruds: data._id
+         },
+       }
+     );
+
     res.status(200).json({ message: "Data created succesfully" });
   } catch (error) {
     res.status(500).json({ error: "There was a server side error" });

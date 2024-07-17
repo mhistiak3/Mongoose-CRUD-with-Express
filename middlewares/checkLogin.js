@@ -12,7 +12,7 @@ const checkLogin = (req, res, next) => {
     req.username = username;
     next()
   } catch (error) {
-     
+  
     next("Authentication failure!")
   }
 };

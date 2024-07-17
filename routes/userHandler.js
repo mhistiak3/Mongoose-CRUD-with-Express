@@ -49,6 +49,8 @@ router.post("/login", async (req, res) => {
             expiresIn: "5h",
           }
         );
+        req.userId = token.userId;
+        req.username = token.username;
         res
           .status(200)
           .json({ access_token: token, message: "Login Successful" });
@@ -58,7 +60,6 @@ router.post("/login", async (req, res) => {
     } else {
       res.status(401).json({ error: "Authentication failed" });
     }
-    
   } catch (error) {
     console.log(error);
 
@@ -66,4 +67,17 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// GET all user
+router.get("/all", async (req, res) => {
+  try {
+    const users = await User.find({}).populate("cruds");
+    console.log(users);
+
+    res.status(200).json({ message: "success" });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({ error: "Singup failed" });
+  }
+});
 module.exports = router;

@@ -5,11 +5,14 @@ const mongoose = require("mongoose");
 const router = express.Router();
 // application module
 const crudSchema = require("../schemas/crudSchema");
+const checkLogin = require("../middlewares/checkLogin");
 
 const CRUD = new mongoose.model("CRUD", crudSchema);
 
 // read all data
-router.get("/", async (req, res) => {
+router.get("/",checkLogin, async (req, res) => {
+
+  
   try {
     let result = await CRUD.find({})
       .select({

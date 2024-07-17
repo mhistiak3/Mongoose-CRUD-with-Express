@@ -1,30 +1,78 @@
 // dependencies
 const express = require("express");
-const router = express.Router()
+const mongoose = require("mongoose");
+// application router
+const router = express.Router();
+// application module
+const crudSchema = require("../schemas/crudSchema");
+
+const CRUD = new mongoose.model("CRUD", crudSchema);
 
 // read all data
-router.get("/",async (req,res)=>{
-    
-})
+router.get("/", async (req, res) => {
+  try {
+    let result = await CRUD.find({})
+      .select({
+        __v: 0,
+      })
+      .limit(3);
+    res.status(200).json({ result });
+  } catch (error) {
+    res.status(500).json({ error: "There was a server side error" });
+  }
+});
 // read single data by id
-router.get("/:id",async (req,res)=>{
+router.get("/:id", async (req, res) => {
+  try {
+    let result = await CRUD.find({ _id: req.params.id });
 
-})
+    res.status(200).json({ result });
+  } catch (error) {
+    res.status(500).json({ error: "There was a server side error" });
+  }
+});
 // create data
-router.post("/",async (req,res)=>{
-
-})
+router.post("/", async (req, res) => {
+  try {
+    const newCRUD = new CRUD(req.body);
+    await newCRUD.save();
+    res.status(200).json({ message: "Data created succesfully" });
+  } catch (error) {
+    res.status(500).json({ error: "There was a server side error" });
+  }
+});
 // create mutiple data
-router.post("/all",async (req,res)=>{
-
-})
+router.post("/all", async (req, res) => {
+  try {
+    await CRUD.insertMany(req.body);
+    res.status(200).json({ message: "Data created succesfully" });
+  } catch (error) {
+    res.status(500).json({ error: "There was a server side error" });
+  }
+});
 // update data
-router.put("/",async (req,res)=>{
-
-})
+router.put("/:id", async (req, res) => {
+  try {
+    const result = await CRUD.findByIdAndUpdate(
+      { _id: req.params.id },
+      {
+        $set: req.body,
+      },
+      { new: true }
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: "There was a server side error" });
+  }
+});
 // delete single data by id
-router.delete("/:id",async (req,res)=>{
+router.delete("/:id", async (req, res) => {
+  try {
+    await CRUD.deleteOne({ _id: req.params.id });
+    res.status(200).json({ message: "Data deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "There was a server side error" });
+  }
+});
 
-})
-
-module.exports = router
+module.exports = router;

@@ -30,6 +30,6 @@ app.use((err, req, res, next) => {
 });
 
 // Server listen
-app.listen(300, () => {
-  console.log(`Server listening: http://localhost:300`);
+app.listen(3000, () => {
+  console.log(`Server listening: http://localhost:3000`);
 });
